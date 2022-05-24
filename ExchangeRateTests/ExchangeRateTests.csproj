@@ -18,6 +18,13 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
+    <PackageReference Include="Moq" Version="4.18.1" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\ExchangeRate\ExchangeRate.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Remove="Moq" />
+  </ItemGroup>
 </Project>

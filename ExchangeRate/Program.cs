@@ -1,6 +1,9 @@
-﻿var builder = WebApplication.CreateBuilder(args);
+﻿using ExchangeRate.Services;
+
+var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+builder.Services.AddScoped<IHistoricalRatesService, HistoricalRatesService>();
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -23,4 +26,3 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.Run();
-
