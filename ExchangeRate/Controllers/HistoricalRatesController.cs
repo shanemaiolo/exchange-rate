@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace ExchangeRate.Controllers
 {
-    [Route("api/v1/[controller]")]
+    [Route("api/v1/historical-rates")]
     [ApiController]
     public class HistoricalRatesController : ControllerBase
     {
@@ -19,11 +19,16 @@ namespace ExchangeRate.Controllers
             _historicalRatesService = historicalRatesService;
         }
 
-        // POST: api/HistoricalRates
         [HttpPost]
-        public IActionResult Post([FromBody] HistoricalRatesRequestModel request)
+        public async Task<IActionResult> PostAsync([FromBody] HistoricalRatesRequestModel request)
         {
-            var response = _historicalRatesService.GetHistoricalRates(request.Dates, request.BaseCurrencyCode, request.TargetCurrencyCode);
+            _logger.LogInformation(
+                "GetHistoricalRates request received for Dates: {Dates}, Base Currency Code: {BaseCurrencyCode}, Target Currency Code: {TargetCurrencyCode}",
+                request.Dates,
+                request.BaseCurrencyCode,
+                request.TargetCurrencyCode);
+
+            var response = await _historicalRatesService.GetHistoricalRatesAsync(request.Dates, request.BaseCurrencyCode, request.TargetCurrencyCode);
 
             return Ok(response);
         }

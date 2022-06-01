@@ -4,12 +4,12 @@ namespace ExchangeRate.Controllers.Models
 {
 	public class HistoricalRatesRequestModel
 	{
-		public IList<DateTimeOffset> Dates { get; }
+		public List<DateTimeOffset> Dates { get; }
 		public string BaseCurrencyCode { get; }
 		public string TargetCurrencyCode { get; }
 
 		public HistoricalRatesRequestModel(
-			IList<DateTimeOffset> dates,
+			List<DateTimeOffset> dates,
 			string baseCurrencyCode,
 			string targetCurrencyCode)
 		{

@@ -1,15 +1,16 @@
 ﻿using System;
+
 namespace ExchangeRate.Models
 {
 	public class HistoricalRatesModel
 	{
-		public double MinRate { get; }
-		public double MaxRate { get; }
+		public RatesModel MinRate { get; }
+		public RatesModel MaxRate { get; }
 		public double AvgRate { get; }
 
 		public HistoricalRatesModel(
-			double minRate,
-			double maxRate,
+			RatesModel minRate,
+			RatesModel maxRate,
 			double avgRate)
 		{
 			MinRate = minRate;
@@ -18,4 +19,3 @@ namespace ExchangeRate.Models
 		}
 	}
 }
-

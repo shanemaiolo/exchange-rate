@@ -1,12 +1,36 @@
-﻿using ExchangeRate.Services;
+﻿using ExchangeRate.Clients;
+using ExchangeRate.Constants;
+using ExchangeRate.Models;
+using ExchangeRate.Services;
+
+//Configuration
+IConfiguration config = new ConfigurationBuilder()
+    .AddJsonFile("appsettings.json")
+    .AddEnvironmentVariables()
+    .Build();
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+// Services
 builder.Services.AddScoped<IHistoricalRatesService, HistoricalRatesService>();
 
+// Clients
+// Currently single client but could be extended to iterate over HttpClients setting
+// to dynamically add each configured client from the settings.
+builder.Services.AddScoped<IExchangeRateHostClient, ExchangeRateHostClient>();
+
+var exchangeRateHostSettings = config
+    .GetRequiredSection($"HttpClients:{HttpClientConstants.ExchangeRateHost}")
+    .Get<HttpClientSettingsModel>();
+
+builder.Services.AddHttpClient(HttpClientConstants.ExchangeRateHost, x =>
+{
+    x.BaseAddress = new Uri(exchangeRateHostSettings.BaseAddress);
+    x.DefaultRequestHeaders.Add("Accept", "application/json");
+});
+
+// API
 builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
