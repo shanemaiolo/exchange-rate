@@ -5,7 +5,7 @@ namespace ExchangeRate.Services
 {
 	public interface IHistoricalRatesService
     {
-		Task<HistoricalRatesModel> GetHistoricalRatesAsync(List<DateTimeOffset> dates, string baseCurrencyCode, string targetCurrencyCode);
+		HistoricalRatesModel GetHistoricalRates(List<DateTimeOffset> dates, string baseCurrencyCode, string targetCurrencyCode);
     }
 
 	public class HistoricalRatesService : IHistoricalRatesService
@@ -21,32 +21,48 @@ namespace ExchangeRate.Services
 			_exchangeRateHostClient = exchangeRateHostClient;
 		}
 
-		public async Task<HistoricalRatesModel> GetHistoricalRatesAsync(
-			List<DateTimeOffset> dates,
-			string baseCurrencyCode,
-			string targetCurrencyCode)
-		{
-			_logger.LogInformation("Dates: {dates}, Base Currency Code: {baseCurrencyCode}, Target Currency Code: {targetCurrencyCode}",
-				dates, baseCurrencyCode, targetCurrencyCode);
+        public HistoricalRatesModel GetHistoricalRates(
+            List<DateTimeOffset> dates,
+            string baseCurrencyCode,
+            string targetCurrencyCode)
+        {
+            _logger.LogInformation("Dates: {dates}, Base Currency Code: {baseCurrencyCode}, Target Currency Code: {targetCurrencyCode}",
+                dates, baseCurrencyCode, targetCurrencyCode);
 
-			var rates = new List<RatesModel>();
+            var tasks = new List<Task>();
+            var rates = new List<RatesModel>();
 
-			// TODO: Make this concurrent
-			foreach(var date in dates)
+            foreach (var date in dates)
             {
-                var historicalRate = await _exchangeRateHostClient.GetHistoricalRates(date.ToString("yyyy-MM-dd"), baseCurrencyCode, targetCurrencyCode);
+                tasks.Add(Task.Run(async () =>
+                {
+                    var historicalRate = await _exchangeRateHostClient.GetHistoricalRates(date.ToString("yyyy-MM-dd"), baseCurrencyCode, targetCurrencyCode);
 
-				if (historicalRate != null && historicalRate.Success)
-				{
-					var rate = historicalRate.Rates[targetCurrencyCode];
-					rates.Add(new RatesModel(historicalRate.Date, rate));
-				}
+                    if (historicalRate != null && historicalRate.Success)
+                    {
+                        var rate = historicalRate.Rates[targetCurrencyCode];
+                        rates.Add(new RatesModel(historicalRate.Date, rate));
+                    }
+                }));
             };
 
-			return ProcessClientRates(rates);
-		}
+            Task t = Task.WhenAll(tasks);
 
-		private HistoricalRatesModel ProcessClientRates(List<RatesModel> rates)
+            try
+            {
+                t.Wait();
+            }
+            catch { }
+
+            if (t.Status != TaskStatus.RanToCompletion)
+            {
+                throw new Exception("Failed requesting Historical Rates");
+            }
+
+            return ProcessClientRates(rates);
+        }
+
+        private HistoricalRatesModel ProcessClientRates(List<RatesModel> rates)
 		{
 			List<RatesModel> sortedRates = rates.OrderBy(x => x.Rate).ToList();
 

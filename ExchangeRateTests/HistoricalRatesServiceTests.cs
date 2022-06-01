@@ -13,7 +13,7 @@ namespace ExchangeRateTests;
 public class HistoricalRatesServiceTests
 {
     [Fact]
-    public async Task GetHistoricalRatesSuccessAsync()
+    public void GetHistoricalRatesSuccess()
     {
         var utcNow = DateTimeOffset.UtcNow;
         var today = new DateTimeOffset(utcNow.Year, utcNow.Month, utcNow.Day, 0, 0, 0, new TimeSpan(0));
@@ -53,7 +53,7 @@ public class HistoricalRatesServiceTests
 
         var service = new HistoricalRatesService(mockLogger.Object, mockClient.Object);
 
-        var result = await service.GetHistoricalRatesAsync(new List<DateTimeOffset>{ yesterday, today }, "SEK", "NOK");
+        var result = service.GetHistoricalRates(new List<DateTimeOffset> { yesterday, today }, "SEK", "NOK");
 
         Assert.Equal(1.2345678, result.MinRate.Rate);
         Assert.Equal(today, result.MinRate.Date);

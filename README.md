@@ -97,3 +97,11 @@ Response Object
   "avgRate": 0.9702316666666667
 }
 ```
+
+## Assumptions and Limitations
+
+The input dates will cause an error if they cannot be converted into type `DateTimeOffset` used by the `HistoricalRatesRequestModel`.
+
+Any time component of the `DateTimeOffset` is ignored.
+
+Currently a single client is defined in scope but this could refactored to iterate over the HttpClients settings to dynamically add each configured client from the settings.

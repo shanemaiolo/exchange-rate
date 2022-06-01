@@ -15,8 +15,6 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddScoped<IHistoricalRatesService, HistoricalRatesService>();
 
 // Clients
-// Currently single client but could be extended to iterate over HttpClients setting
-// to dynamically add each configured client from the settings.
 builder.Services.AddScoped<IExchangeRateHostClient, ExchangeRateHostClient>();
 
 var exchangeRateHostSettings = config

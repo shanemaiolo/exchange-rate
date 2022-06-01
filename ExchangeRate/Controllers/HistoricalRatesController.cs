@@ -20,7 +20,7 @@ namespace ExchangeRate.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> PostAsync([FromBody] HistoricalRatesRequestModel request)
+        public IActionResult Post([FromBody] HistoricalRatesRequestModel request)
         {
             _logger.LogInformation(
                 "GetHistoricalRates request received for Dates: {Dates}, Base Currency Code: {BaseCurrencyCode}, Target Currency Code: {TargetCurrencyCode}",
@@ -28,7 +28,7 @@ namespace ExchangeRate.Controllers
                 request.BaseCurrencyCode,
                 request.TargetCurrencyCode);
 
-            var response = await _historicalRatesService.GetHistoricalRatesAsync(request.Dates, request.BaseCurrencyCode, request.TargetCurrencyCode);
+            var response = _historicalRatesService.GetHistoricalRates(request.Dates, request.BaseCurrencyCode, request.TargetCurrencyCode);
 
             return Ok(response);
         }
